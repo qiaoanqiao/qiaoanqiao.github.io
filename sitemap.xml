@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.fenxiangy.com/note/supervisor-process-management-tool-listen-start-stop-restart-one-or-more-processes-autorestart.html</loc>
+    
+    <lastmod>2019-08-06T01:10:27.279Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.fenxiangy.com/about/index.html</loc>
     
     <lastmod>2019-08-05T08:38:27.742Z</lastmod>
@@ -68,13 +75,6 @@
     <loc>https://www.fenxiangy.com/technology/nodejs-implements-mqtt-publishsend-message-to-topic.html</loc>
     
     <lastmod>2019-08-05T08:09:34.209Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.fenxiangy.com/note/supervisor-process-management-tool-listen-start-stop-restart-one-or-more-processes-autorestart.html</loc>
-    
-    <lastmod>2019-08-05T08:09:34.022Z</lastmod>
     
   </url>
   
