@@ -1,1 +1,346 @@
-"use strict";NexT.utils={wrapImageWithFancyBox:function(){$(".post-body img").each(function(){var t=$(this),e=t.attr("title")||t.attr("alt"),i=t.parent("a");if(i.length<1){var a=t.attr("data-src")||t.attr("src");i=t.wrap('<a class="fancybox fancybox.image" href="'.concat(a,'" itemscope itemtype="http://schema.org/ImageObject" itemprop="url"></a>')).parent("a"),t.is(".post-gallery img")?(i.addClass("post-gallery-img"),i.attr("data-fancybox","gallery").attr("rel","gallery")):t.is(".group-picture img")?i.attr("data-fancybox","group").attr("rel","group"):i.attr("data-fancybox","default").attr("rel","default")}e&&(i.append('<p class="image-caption">'.concat(e,"</p>")),i.attr("title",e).attr("data-caption",e))}),$(".fancybox").fancybox({loop:!0,helpers:{overlay:{locked:!1}}})},registerCopyCode:function(){$(".highlight").not(".gist .highlight").each(function(t,e){function i(t){"mac"===CONFIG.copycode.style?t.html('<i class="fa fa-clipboard"></i>'):t.text(CONFIG.translation.copy_button)}var a=$("<div>").addClass("copy-btn");a.on("click",function(){var t=$(this).parent().find(".code").find(".line").map(function(t,e){return $(e).text()}).toArray().join("\n"),e=document.createElement("textarea"),i=window.pageYOffset||document.documentElement.scrollTop;e.style.top=i+"px",e.style.position="absolute",e.style.opacity="0",e.readOnly=!0,e.value=t,document.body.appendChild(e);var a=document.getSelection(),n=0<a.rangeCount&&a.getRangeAt(0);e.select(),e.setSelectionRange(0,t.length),e.readOnly=!1;var o=document.execCommand("copy");CONFIG.copycode.show_result&&$(this).text(o?CONFIG.translation.copy_success:CONFIG.translation.copy_failure),e.blur(),$(this).blur(),n&&(a.removeAllRanges(),a.addRange(n)),document.body.removeChild(e)}),a.on("mouseleave",function(){var t=$(this).closest(".copy-btn");setTimeout(function(){i(t)},300)}),i(a),$(e).wrap($("<div>").addClass("highlight-wrap")).after(a)})},registerBackToTop:function(){var a=$(".back-to-top");$(window).on("load scroll",function(){a.toggleClass("back-to-top-on",50<window.pageYOffset);var t=$(window).scrollTop()/NexT.utils.getContentVisibilityHeight(),e=Math.round(100*t),i=Math.min(e,100);$("#scrollpercent > span").html(i)}),a.on("click",function(){$("html, body").animate({scrollTop:0})})},registerTabsTag:function(){$(".tabs ul.nav-tabs .tab").on("click",function(t){if(t.preventDefault(),!$(this).hasClass("active")){$(this).addClass("active").siblings().removeClass("active");var e=$(this).find("a").attr("href");$(e).addClass("active").siblings().removeClass("active")}})},registerCanIUseTag:function(){window.addEventListener("message",function(t){var e=t.data;if("string"==typeof e&&-1<e.indexOf("ciu_embed")){var i=e.split(":")[1],a=e.split(":")[2];$("iframe[data-feature=".concat(i,"]")).height(parseInt(a,10)+30)}},!1)},registerActiveMenuItem:function(){$(".menu-item").each(function(){var t=$(this).find("a[href]")[0];t.hostname!==location.hostname||t.pathname!==location.pathname&&t.pathname!==location.pathname.replace("index.html","","g")?$(this).removeClass("menu-item-active"):$(this).addClass("menu-item-active")})},embeddedVideoTransformer:function(){var t=$("iframe"),s=new RegExp(["www.youtube.com","player.vimeo.com","player.youku.com","music.163.com","www.tudou.com"].join("|"));function r(t){return{width:t.width(),height:t.height()}}function c(t,e){return e/t*100}t.each(function(){var t,e=this,i=$(this),a=r(i);if(0<this.src.search(s)){var n=c(a.width,a.height);i.width("100%").height("100%").css({position:"absolute",top:"0",left:"0"});var o=document.createElement("div");if(o.className="fluid-vids",o.style.position="relative",o.style.marginBottom="20px",o.style.width="100%",o.style.paddingTop=n+"%",""===o.style.paddingTop&&(o.style.paddingTop="50%"),e.parentNode.insertBefore(o,e),o.appendChild(e),0<this.src.search("music.163.com"))((t=r(i)).width>a.width||t.height<a.height)&&(o.style.paddingTop=c(t.width,a.height)+"%")}})},hasMobileUA:function(){var t=window.navigator.userAgent;return/iPad|iPhone|Android|Opera Mini|BlackBerry|webOS|UCWEB|Blazer|PSP|IEMobile|Symbian/g.test(t)},isTablet:function(){return window.screen.width<992&&767<window.screen.width&&this.hasMobileUA()},isMobile:function(){return window.screen.width<767&&this.hasMobileUA()},isDesktop:function(){return!this.isTablet()&&!this.isMobile()},escapeSelector:function(t){return t.replace(/[!"$%&'()*+,./:;<=>?@[\\\]^`{|}~]/g,"\\$&")},updateSidebarPosition:function(){if(this.isDesktop()&&!this.isPisces()&&!this.isGemini()){var t=$(".post-toc-content"),e=CONFIG.page.sidebar;if("boolean"!=typeof e){var i=0<t.length&&0<t.html().trim().length;e="always"===CONFIG.sidebar.display||"post"===CONFIG.sidebar.display&&i}e&&$(document).trigger("sidebar:show")}},isMuse:function(){return"Muse"===CONFIG.scheme},isMist:function(){return"Mist"===CONFIG.scheme},isPisces:function(){return"Pisces"===CONFIG.scheme},isGemini:function(){return"Gemini"===CONFIG.scheme},getScrollbarWidth:function(){var t=$("<div/>").addClass("scrollbar-measure").prependTo("body"),e=t[0],i=e.offsetWidth-e.clientWidth;return t.remove(),i},getContentVisibilityHeight:function(){var t=$(".container").height(),e=$(window).height();return e<t?t-e:$(document).height()-e},getSidebarb2tHeight:function(){return CONFIG.back2top.enable&&CONFIG.back2top.sidebar?$(".back-to-top").height():0},getSidebarSchemePadding:function(){var t="block"===$(".sidebar-nav").css("display")?$(".sidebar-nav").outerHeight(!0):0,e=$(".sidebar-inner"),i=e.innerWidth()-e.width(),a=CONFIG.sidebar.offset?CONFIG.sidebar.offset:12;return this.isPisces()||this.isGemini()?2*i+t+a+this.getSidebarb2tHeight():2*i+t/2},getScript:function(t,e,i){i?e():$.ajax({type:"GET",url:t,dataType:"script",cache:!0,success:e})}};
+/* global NexT, CONFIG */
+
+NexT.utils = {
+
+  /**
+   * Wrap images with fancybox.
+   */
+  wrapImageWithFancyBox: function() {
+    $('.post-body img')
+      .each(function() {
+        var $image = $(this);
+        var imageTitle = $image.attr('title') || $image.attr('alt');
+        var $imageWrapLink = $image.parent('a');
+
+        if ($imageWrapLink.length < 1) {
+          var imageLink = $image.attr('data-src') || $image.attr('src');
+          $imageWrapLink = $image.wrap(`<a class="fancybox fancybox.image" href="${imageLink}" itemscope itemtype="http://schema.org/ImageObject" itemprop="url"></a>`).parent('a');
+          if ($image.is('.post-gallery img')) {
+            $imageWrapLink.addClass('post-gallery-img');
+            $imageWrapLink.attr('data-fancybox', 'gallery').attr('rel', 'gallery');
+          } else if ($image.is('.group-picture img')) {
+            $imageWrapLink.attr('data-fancybox', 'group').attr('rel', 'group');
+          } else {
+            $imageWrapLink.attr('data-fancybox', 'default').attr('rel', 'default');
+          }
+        }
+
+        if (imageTitle) {
+          $imageWrapLink.append(`<p class="image-caption">${imageTitle}</p>`);
+          // Make sure img title tag will show correctly in fancybox
+          $imageWrapLink.attr('title', imageTitle).attr('data-caption', imageTitle);
+        }
+      });
+
+    $('.fancybox').fancybox({
+      loop   : true,
+      helpers: {
+        overlay: {
+          locked: false
+        }
+      }
+    });
+  },
+
+  /**
+   * One-click copy code support.
+   */
+  registerCopyCode: function() {
+    $('.highlight').not('.gist .highlight').each(function(i, e) {
+      function initButton(button) {
+        if (CONFIG.copycode.style === 'mac') {
+          button.html('<i class="fa fa-clipboard"></i>');
+        } else {
+          button.text(CONFIG.translation.copy_button);
+        }
+      }
+      var $button = $('<div>').addClass('copy-btn');
+      $button.on('click', function() {
+        var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; // Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.readOnly = true;
+        ta.value = code;
+        document.body.appendChild(ta);
+        const selection = document.getSelection();
+        const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+        ta.select();
+        ta.setSelectionRange(0, code.length);
+        ta.readOnly = false;
+        var result = document.execCommand('copy');
+        if (CONFIG.copycode.show_result) {
+          $(this).text(result ? CONFIG.translation.copy_success : CONFIG.translation.copy_failure);
+        }
+        ta.blur(); // For iOS
+        $(this).blur();
+        if (selected) {
+          selection.removeAllRanges();
+          selection.addRange(selected);
+        }
+        document.body.removeChild(ta);
+      });
+      $button.on('mouseleave', function() {
+        var $b = $(this).closest('.copy-btn');
+        setTimeout(function() {
+          initButton($b);
+        }, 300);
+      });
+      initButton($button);
+      $(e).wrap($('<div>').addClass('highlight-wrap')).after($button);
+    });
+  },
+
+  registerBackToTop: function() {
+    var THRESHOLD = 50;
+    var $top = $('.back-to-top');
+
+    // For init back to top in sidebar if page was scrolled after page refresh.
+    $(window).on('load scroll', function() {
+      $top.toggleClass('back-to-top-on', window.pageYOffset > THRESHOLD);
+
+      var scrollTop = $(window).scrollTop();
+      var contentVisibilityHeight = NexT.utils.getContentVisibilityHeight();
+      var scrollPercent = scrollTop / contentVisibilityHeight;
+      var scrollPercentRounded = Math.round(scrollPercent * 100);
+      var scrollPercentMaxed = Math.min(scrollPercentRounded, 100);
+      $('#scrollpercent > span').html(scrollPercentMaxed);
+    });
+
+    $top.on('click', function() {
+      $('html, body').animate({ scrollTop: 0 });
+    });
+  },
+
+  /**
+   * Tabs tag listener (without twitter bootstrap).
+   */
+  registerTabsTag: function() {
+    // Binding `nav-tabs` & `tab-content` by real time permalink changing.
+    $('.tabs ul.nav-tabs .tab').on('click', function(href) {
+      href.preventDefault();
+      // Prevent selected tab to select again.
+      if (!$(this).hasClass('active')) {
+        // Add & Remove active class on `nav-tabs` & `tab-content`.
+        $(this).addClass('active').siblings().removeClass('active');
+        var tActive = $(this).find('a').attr('href');
+        $(tActive).addClass('active').siblings().removeClass('active');
+      }
+    });
+  },
+
+  registerCanIUseTag: function() {
+    // GET RESPONSIVE HEIGHT PASSED FROM IFRAME
+    window.addEventListener('message', e => {
+      var data = e.data;
+      if ((typeof data === 'string') && (data.indexOf('ciu_embed') > -1)) {
+        var featureID = data.split(':')[1];
+        var height = data.split(':')[2];
+        $(`iframe[data-feature=${featureID}]`).height(parseInt(height, 10) + 30);
+      }
+    }, false);
+  },
+
+  registerActiveMenuItem: function() {
+    $('.menu-item').each(function() {
+      var target = $(this).find('a[href]')[0];
+      if (target.hostname === location.hostname && (target.pathname === location.pathname || target.pathname === location.pathname.replace('index.html', '', 'g'))) {
+        $(this).addClass('menu-item-active');
+      } else {
+        $(this).removeClass('menu-item-active');
+      }
+    });
+  },
+
+  /**
+   * Transform embedded video to support responsive layout.
+   * @see http://toddmotto.com/fluid-and-responsive-youtube-and-vimeo-videos-with-fluidvids-js/
+   */
+  embeddedVideoTransformer: function() {
+    var $iframes = $('iframe');
+
+    // Supported Players. Extend this if you need more players.
+    var SUPPORTED_PLAYERS = [
+      'www.youtube.com',
+      'player.vimeo.com',
+      'player.youku.com',
+      'music.163.com',
+      'www.tudou.com'
+    ];
+    var pattern = new RegExp(SUPPORTED_PLAYERS.join('|'));
+
+    function getDimension($element) {
+      return {
+        width : $element.width(),
+        height: $element.height()
+      };
+    }
+
+    function getAspectRadio(width, height) {
+      return height / width * 100;
+    }
+
+    $iframes.each(function() {
+      var iframe = this;
+      var $iframe = $(this);
+      var oldDimension = getDimension($iframe);
+      var newDimension;
+
+      if (this.src.search(pattern) > 0) {
+
+        // Calculate the video ratio based on the iframe's w/h dimensions
+        var videoRatio = getAspectRadio(oldDimension.width, oldDimension.height);
+
+        // Replace the iframe's dimensions and position the iframe absolute
+        // This is the trick to emulate the video ratio
+        $iframe.width('100%').height('100%')
+          .css({
+            position: 'absolute',
+            top     : '0',
+            left    : '0'
+          });
+
+        // Wrap the iframe in a new <div> which uses a dynamically fetched padding-top property
+        // based on the video's w/h dimensions
+        var wrap = document.createElement('div');
+        wrap.className = 'fluid-vids';
+        wrap.style.position = 'relative';
+        wrap.style.marginBottom = '20px';
+        wrap.style.width = '100%';
+        wrap.style.paddingTop = videoRatio + '%';
+        // Fix for appear inside tabs tag.
+        (wrap.style.paddingTop === '') && (wrap.style.paddingTop = '50%');
+
+        // Add the iframe inside our newly created <div>
+        var iframeParent = iframe.parentNode;
+        iframeParent.insertBefore(wrap, iframe);
+        wrap.appendChild(iframe);
+
+        // Additional adjustments for 163 Music
+        if (this.src.search('music.163.com') > 0) {
+          newDimension = getDimension($iframe);
+          var shouldRecalculateAspect = newDimension.width > oldDimension.width
+                                     || newDimension.height < oldDimension.height;
+
+          // 163 Music Player has a fixed height, so we need to reset the aspect radio
+          if (shouldRecalculateAspect) {
+            wrap.style.paddingTop = getAspectRadio(newDimension.width, oldDimension.height) + '%';
+          }
+        }
+      }
+    });
+  },
+
+  hasMobileUA: function() {
+    var nav = window.navigator;
+    var ua = nav.userAgent;
+    var pa = /iPad|iPhone|Android|Opera Mini|BlackBerry|webOS|UCWEB|Blazer|PSP|IEMobile|Symbian/g;
+
+    return pa.test(ua);
+  },
+
+  isTablet: function() {
+    return window.screen.width < 992 && window.screen.width > 767 && this.hasMobileUA();
+  },
+
+  isMobile: function() {
+    return window.screen.width < 767 && this.hasMobileUA();
+  },
+
+  isDesktop: function() {
+    return !this.isTablet() && !this.isMobile();
+  },
+
+  /**
+   * Escape meta symbols in jQuery selectors.
+   *
+   * @param selector
+   * @returns {string|void|XML|*}
+   */
+  escapeSelector: function(selector) {
+    return selector.replace(/[!"$%&'()*+,./:;<=>?@[\\\]^`{|}~]/g, '\\$&');
+  },
+
+  updateSidebarPosition: function() {
+    if (!this.isDesktop() || this.isPisces() || this.isGemini()) {
+      return;
+    }
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    var display = CONFIG.page.sidebar;
+    if (typeof display !== 'boolean') {
+      // There's no definition sidebar in the page front-matter
+      var hasTOC = $tocContent.length > 0 && $tocContent.html().trim().length > 0;
+      display = CONFIG.sidebar.display === 'always' || (CONFIG.sidebar.display === 'post' && hasTOC);
+    }
+    if (display) {
+      $(document).trigger('sidebar:show');
+    }
+  },
+
+  isMuse: function() {
+    return CONFIG.scheme === 'Muse';
+  },
+
+  isMist: function() {
+    return CONFIG.scheme === 'Mist';
+  },
+
+  isPisces: function() {
+    return CONFIG.scheme === 'Pisces';
+  },
+
+  isGemini: function() {
+    return CONFIG.scheme === 'Gemini';
+  },
+
+  getScrollbarWidth: function() {
+    var $div = $('<div/>').addClass('scrollbar-measure').prependTo('body');
+    var div = $div[0];
+    var scrollbarWidth = div.offsetWidth - div.clientWidth;
+    $div.remove();
+
+    return scrollbarWidth;
+  },
+
+  getContentVisibilityHeight: function() {
+    var docHeight = $('.container').height();
+    var winHeight = $(window).height();
+    var contentVisibilityHeight = docHeight > winHeight ? docHeight - winHeight : $(document).height() - winHeight;
+    return contentVisibilityHeight;
+  },
+
+  getSidebarb2tHeight: function() {
+    var sidebarb2tHeight = CONFIG.back2top.enable && CONFIG.back2top.sidebar ? $('.back-to-top').height() : 0;
+    return sidebarb2tHeight;
+  },
+
+  getSidebarSchemePadding: function() {
+    var sidebarNavHeight = $('.sidebar-nav').css('display') === 'block' ? $('.sidebar-nav').outerHeight(true) : 0;
+    var sidebarInner = $('.sidebar-inner');
+    var sidebarPadding = sidebarInner.innerWidth() - sidebarInner.width();
+    var sidebarOffset = CONFIG.sidebar.offset ? CONFIG.sidebar.offset : 12;
+    var sidebarSchemePadding = this.isPisces() || this.isGemini()
+      ? (sidebarPadding * 2) + sidebarNavHeight + sidebarOffset + this.getSidebarb2tHeight()
+      : (sidebarPadding * 2) + (sidebarNavHeight / 2);
+    return sidebarSchemePadding;
+  },
+
+  getScript: function(url, callback, condition) {
+    if (condition) {
+      callback();
+    } else {
+      $.ajax({
+        type: 'GET',
+        url: url,
+        dataType: 'script',
+        cache: true,
+        success: callback
+      });
+    }
+  }
+};

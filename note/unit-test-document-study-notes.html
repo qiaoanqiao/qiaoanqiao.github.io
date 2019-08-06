@@ -1,1 +1,791 @@
-<!DOCTYPE html><html class="theme-next mist use-motion" lang="zh-CN"><head><meta charset="UTF-8"><meta name="generator" content="Hexo 3.9.0"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=2"><meta name="theme-color" content="#222"><meta http-equiv="X-UA-Compatible" content="IE=edge"><link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0"><link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0"><link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0"><link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222"><link rel="stylesheet" href="/css/main.css?v=7.3.0"><link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0"><link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css"><script src="/lib/pace/pace.min.js?v=1.0.2"></script><link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2"><script id="hexo-configurations">var NexT=window.NexT||{},CONFIG={root:"/",scheme:"Mist",version:"7.3.0",sidebar:{position:"left",display:"post",offset:12,onmobile:!1},back2top:{enable:!0,sidebar:!1,scrollpercent:!1},save_scroll:!1,copycode:{enable:!1,show_result:!1,style:null},fancybox:!0,mediumzoom:!1,lazyload:!1,pangu:!1,algolia:{applicationID:"",apiKey:"",indexName:"",hits:{per_page:10},labels:{input_placeholder:"Search for Posts",hits_empty:"We didn't find any results for the search: ${query}",hits_stats:"${hits} results found in ${time} ms"}},localsearch:{enable:!0,trigger:"auto",top_n_per_article:1,unescape:!1,preload:!1},path:"search.xml",tabs:!0,motion:{enable:!0,async:!1,transition:{post_block:"fadeIn",post_header:"slideDownIn",post_body:"slideDownIn",coll_header:"slideLeftIn",sidebar:"slideUpIn"}},translation:{copy_button:"复制",copy_success:"复制成功",copy_failure:"复制失败"}}</script><meta name="description" content="注意事项:  编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用  注释依赖(测试中的流程控制) 当某个测试所依赖的测试   失败时，PHPUnit 会跳过这个测试。  例如:测试a 需要 测试b获取的值 来进行测试a的测试;可以用注释依赖进行值传递 如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参"><meta name="keywords" content="phpunit"><meta property="og:type" content="article"><meta property="og:title" content="单元测试文档学习笔记"><meta property="og:url" content="https://www.fenxiangy.com/note//unit-test-document-study-notes.html"><meta property="og:site_name" content="分享哟"><meta property="og:description" content="注意事项:  编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用  注释依赖(测试中的流程控制) 当某个测试所依赖的测试   失败时，PHPUnit 会跳过这个测试。  例如:测试a 需要 测试b获取的值 来进行测试a的测试;可以用注释依赖进行值传递 如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参"><meta property="og:locale" content="zh-CN"><meta property="og:updated_time" content="2019-08-05T08:09:33.916Z"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="单元测试文档学习笔记"><meta name="twitter:description" content="注意事项:  编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用  注释依赖(测试中的流程控制) 当某个测试所依赖的测试   失败时，PHPUnit 会跳过这个测试。  例如:测试a 需要 测试b获取的值 来进行测试a的测试;可以用注释依赖进行值传递 如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参"><link rel="canonical" href="https://www.fenxiangy.com/note//unit-test-document-study-notes"><script id="page-configurations">CONFIG.page={sidebar:"",isHome:!1,isPost:!0,isPage:!1,isArchive:!1}</script><title>单元测试文档学习笔记 | 分享哟</title><script>var _hmt=_hmt||[];!function(){var e=document.createElement("script");e.src="https://hm.baidu.com/hm.js?c0261b738d8ce7c4fcea76f72faec843";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}()</script><noscript><style>.sidebar-inner,.use-motion .brand,.use-motion .collection-title,.use-motion .comments,.use-motion .menu-item,.use-motion .motion-element,.use-motion .pagination,.use-motion .post-block,.use-motion .post-body,.use-motion .post-header{opacity:initial}.use-motion .logo,.use-motion .site-subtitle,.use-motion .site-title{opacity:initial;top:initial}.use-motion .logo-line-before i{left:initial}.use-motion .logo-line-after i{right:initial}</style></noscript><script src="https://cdn.jsdelivr.net/npm/valine@1.3.9/dist/Valine.min.js"></script></head><body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN"><div class="container sidebar-position-left"><div class="headband"></div><header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="header-inner"><div class="site-brand-wrapper"><div class="site-meta"><div class="custom-logo-site-title"><a href="/" class="brand" rel="start"><span class="logo-line-before"><i></i></span> <span class="site-title">分享哟</span><span class="logo-line-after"><i></i></span></a></div><p class="site-subtitle">很少有人懂天秤, 以前没有. 以后也没有。</p></div><div class="site-nav-toggle"><button aria-label="切换导航栏"><span class="btn-bar"></span><span class="btn-bar"></span><span class="btn-bar"></span></button></div></div><nav class="site-nav"><ul id="menu" class="menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i><br>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i><br>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i><br>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i><br>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i><br>归档</a></li><li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i><br>站点地图</a></li><li class="menu-item menu-item-search"><a href="javascript:;" class="popup-trigger"><i class="menu-item-icon fa fa-search fa-fw"></i><br>搜索</a></li></ul><div class="site-search"><div class="popup search-popup local-search-popup"><div class="local-search-header clearfix"><span class="search-icon"><i class="fa fa-search"></i></span><span class="popup-btn-close"><i class="fa fa-times-circle"></i></span><div class="local-search-input-wrapper"><input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input"></div></div><div id="local-search-result"></div></div></div></nav></div></header><main id="main" class="main"><div class="main-inner"><div class="content-wrap"><div id="content" class="content page-post-detail"><div id="posts" class="posts-expand"><article class="post post-type-normal" itemscope itemtype="http://schema.org/Article"><div class="post-block"><link itemprop="mainEntityOfPage" href="https://www.fenxiangy.com/note/unit-test-document-study-notes.html"><span hidden itemprop="author" itemscope itemtype="http://schema.org/Person"><meta itemprop="name" content="Murry"><meta itemprop="description" content="分享哟,php程序猿,php博客,phpblog"><meta itemprop="image" content="/images/avatar.gif"></span><span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization"><meta itemprop="name" content="分享哟"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">单元测试文档学习笔记</h1><div class="post-meta"><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-o"></i></span> <span class="post-meta-item-text">发表于</span> <time title="创建时间：2018-10-24 10:33:00" itemprop="dateCreated datePublished" datetime="2018-10-24T10:33:00+08:00">2018-10-24</time></span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-calendar-check-o"></i></span> <span class="post-meta-item-text">更新于</span> <time title="修改时间：2019-08-05 16:09:33" itemprop="dateModified" datetime="2019-08-05T16:09:33+08:00">2019-08-05</time></span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-folder-o"></i></span> <span class="post-meta-item-text">分类于</span> <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/note/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a></span></span><span class="post-meta-item"><span class="post-meta-item-icon"><i class="fa fa-comment-o"></i></span> <span class="post-meta-item-text">评论数：</span><a href="/note/unit-test-document-study-notes.html#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/note/unit-test-document-study-notes.html" itemprop="commentCount"></span></a></span></div></header><div class="post-body" itemprop="articleBody"><p>注意事项:</p><ul><li>编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用</li></ul><h4 id="注释依赖-测试中的流程控制"><a href="#注释依赖-测试中的流程控制" class="headerlink" title="注释依赖(测试中的流程控制)"></a>注释依赖(测试中的流程控制)</h4><ul><li>当某个测试所依赖的测试</li><li>失败时，PHPUnit 会跳过这个测试。<br>例如:测试a 需要 测试b获取的值 来进行测试a的测试;<br>可以用注释依赖进行值传递</li><li>如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参数将先于来自所依赖的测试的。来自于所依赖的测试的参数对于每个数据集都是一样的。</li><li>如果一个测试依赖于另外一个使用了数据供给器的测试，仅当被依赖的测试至少能在一组数据上成功时，依赖于它的测试才会运行。使用了数据供给器的测试，其运行结果是无法注入到依赖于此测试的其他测试中的。</li></ul><p>详细使用参考: <a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id7" target="_blank" rel="noopener">手册</a></p><h4 id="数据供给器-自动迭代"><a href="#数据供给器-自动迭代" class="headerlink" title="数据供给器(自动迭代)"></a>数据供给器(自动迭代)</h4><ul><li>测试a 需要多种数据进行测试, 用数据供给器后,会自动迭代测试数据供给器提供的数据进行测试.</li></ul><blockquote><p>测试方法可以接受任意参数。这些参数由数据供给器方法（在 writing-tests-for-phpunit.data-providers.examples.DataTest.php<code>中，是 ``additionProvider()</code> 方法）提供。用 @dataProvider 标注来指定使用哪个数据供给器方法。</p></blockquote><blockquote><p>数据供给器方法必须声明为 <code>public</code>，其返回值要么是一个数组，其每个元素也是<code>数组</code>；要么是一个实现了 Iterator 接口的对象，在对它进行迭代时每步产生一个数组。每个数组都是测试数据集的一部分，将以它的内容作为参数来调用测试方法。</p></blockquote><p>Example 2.5 使用返回数组的数组的数据供给器</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">use PHPUnit\Framework\TestCase;</span><br><span class="line">    </span><br><span class="line">class DataTest extends TestCase</span><br><span class="line">&#123;</span><br><span class="line">    /**</span><br><span class="line">     * @dataProvider additionProvider</span><br><span class="line">     */</span><br><span class="line">    public function testAdd($a, $b, $expected)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;assertEquals($expected, $a + $b);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public function additionProvider()</span><br><span class="line">    &#123;</span><br><span class="line">        return [</span><br><span class="line">            [0, 0, 0],</span><br><span class="line">            [0, 1, 1],</span><br><span class="line">            [1, 0, 1],</span><br><span class="line">            [1, 1, 3]</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure><p>详细使用参考: <a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id10" target="_blank" rel="noopener">手册</a></p><h4 id="测试出现异常"><a href="#测试出现异常" class="headerlink" title="测试出现异常:"></a>测试出现异常:</h4><p>标注来测试被测代码中是否抛出了异常。</p><ul><li><p>php原生异常<br>使用<code>PHPUnit\Framework\Error</code> 来注释</p><p><code>PHPUnit\Framework\Error\Notice</code> 和 <code>PHPUnit\Framework\Error\Warning</code> 分别代表 PHP 通知与 PHP 警告。</p></li><li><p>如果测试依靠会触发错误的 PHP 函数，例如 fopen ，有时候在测试中使用错误抑制符会很有用。通过抑制住错误通知，就能对返回值进行检查，否则错误通知将会导致抛出 PHPUnit\Framework\Error\Notice。</p></li></ul><blockquote><p>对异常进行测试是越明确越好的。对太笼统的类进行测试有可能导致不良副作用。因此，不再允许用 @expectedException 或 setExpectedException() 对 Exception 类进行测试。</p></blockquote><p>测试的功能或代码, 编写的测试运行后断言肯定会抛出异常,可以用<code>@expectException</code>指定抛出的异常类型;如果抛出异常类型同注释异常类型一致,结果为测试成功;</p><p>@expectedExceptionCode (异常错误码)、@expectedExceptionMessage (异常信息)和 @expectedExceptionMessageRegExp (异常信息正则匹配)</p><p>详细使用参考: <a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id11" target="_blank" rel="noopener">手册</a></p><h4 id="对输出进行测试-echo等"><a href="#对输出进行测试-echo等" class="headerlink" title="对输出进行测试(echo等)"></a>对输出进行测试(echo等)</h4><p>如<code>echo</code>, <code>print</code>. <em>单元测试使用输出缓冲区控制方式获取此内容</em> 详见<a href="http://php.net/manual/zh/ref.outcontrol.php" target="_blank" rel="noopener">手册</a></p><p>方法:<a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#writing-tests-for-phpunit-output-tables-api" target="_blank" rel="noopener">手册</a></p><p><a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id16" target="_blank" rel="noopener">手册</a></p><h4 id="phpunit可生成日志-搭配Xdebug"><a href="#phpunit可生成日志-搭配Xdebug" class="headerlink" title="phpunit可生成日志(搭配Xdebug)"></a>phpunit可生成日志(搭配Xdebug)</h4><p><a href="https://phpunit.readthedocs.io/zh_CN/latest/textui.html#id2" target="_blank" rel="noopener">文档</a></p><h4 id="基镜-测试基础环境"><a href="#基镜-测试基础环境" class="headerlink" title="基镜(测试基础环境)"></a>基镜(测试基础环境)</h4><p>在执行测试时,有时需要预先搭建测试环境.<br>类似于php的魔术方法行为;</p><p><a href="https://phpunit.readthedocs.io/zh_CN/latest/fixtures.html#fixtures" target="_blank" rel="noopener">手册</a></p><h4 id="测试替身"><a href="#测试替身" class="headerlink" title="测试替身"></a>测试替身</h4><ul><li><p>桩件<br>在桩件中,创建测试所需要的对象,所需要的对象可能依赖或者创建复杂使用难度高</p><blockquote><p>有时候对被测系统(SUT)进行测试是很困难的，因为它依赖于其他无法在测试环境中使用的组件。这有可能是因为这些组件不可用，它们不会返回测试所需要的结果，或者执行它们会有不良副作用。在其他情况下，我们的测试策略要求对被测系统的内部行为有更多控制或更多可见性。<br>使用桩件可以替换掉被测试系统所依赖的实际组件;返回配置好返回值的测试替身(桩件)的方法称为上桩;</p></blockquote><ul><li>可以固定简单返回值,也可以使用变量实现更复杂的上桩<code>willReturn($value)</code> or <code>will($this-&gt;returnValue($value))</code></li><li>返回对桩件对象的引用<code>will($this-&gt;returnSelf());</code></li><li>不同参数对应的不同返回值方式上桩<code>returnValueMap(array $map);</code></li><li>让上桩方法返回回调函数或方法的结果<code>returnCallback()</code>;</li><li>直接给出期望返回值的列表<code>will($this-&gt;onConsecutiveCalls(2, 3, 5, 7));</code>调用顺序返回</li><li>抛出异常<code>will($this-&gt;throwException(new Exception));</code></li><li></li></ul></li><li><p>仿件对象<br>使用仿件对象，主要的功能是验证预期的行为，作为观察点来核实被测试系统在测试中的间接输出。</p><ul><li><p>方法的执行次数<code>expects($this-&gt;once())-&gt;method(&#39;update&#39;)</code></p></li><li><p>传入方法的参数<code>with($this-&gt;equalTo(&#39;something&#39;));</code></p></li><li><p>对特质(Trait)与抽象类进行模仿</p></li><li><p>对 Web 服务(Web Services)进行上桩或模仿</p></li><li><p>对文件系统进行模仿</p></li><li><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testMockBuy</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $appleMock = <span class="keyword">$this</span>-&gt;getMockBuilder(Apple::class)</span><br><span class="line">                      -&gt;setMethods([<span class="string">'getPrice'</span>, <span class="string">'buy'</span>])</span><br><span class="line">                      -&gt;getMock();</span><br><span class="line">    <span class="comment">//建立预期情况，buy方法会被调用一次</span></span><br><span class="line">    $appleMock-&gt;expects(<span class="keyword">$this</span>-&gt;once())</span><br><span class="line">              -&gt;method(<span class="string">'buy'</span>);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;custom-&gt;buy($appleMock, <span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ul></li></ul><p><a href="https://phpunit.readthedocs.io/zh_CN/latest/test-doubles.html#test-doubles-stubs" target="_blank" rel="noopener">文档地址</a></p></div><footer class="post-footer"><div class="post-tags"><a href="/tags/phpunit/" rel="tag"># phpunit</a></div><div class="post-nav"><div class="post-nav-next post-nav-item"><a href="/note/phpstorm-collection-common-shortcuts.html" rel="next" title="phpstorm珍藏常用快捷键"><i class="fa fa-chevron-left"></i> phpstorm珍藏常用快捷键</a></div><span class="post-nav-divider"></span><div class="post-nav-prev post-nav-item"><a href="/note/php-data-to-json-chinese-transcoding-problem.html" rel="prev" title="php 数据转json 中文转码问题">php 数据转json 中文转码问题<i class="fa fa-chevron-right"></i></a></div></div></footer></div></article></div></div><div class="comments" id="comments"></div></div><div class="sidebar-toggle"><div class="sidebar-toggle-line-wrap"><span class="sidebar-toggle-line sidebar-toggle-line-first"></span><span class="sidebar-toggle-line sidebar-toggle-line-middle"></span><span class="sidebar-toggle-line sidebar-toggle-line-last"></span></div></div><aside id="sidebar" class="sidebar"><div class="sidebar-inner"><ul class="sidebar-nav motion-element"><li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">文章目录</li><li class="sidebar-nav-overview" data-target="site-overview-wrap">站点概览</li></ul><div class="site-overview-wrap sidebar-panel"><div class="site-overview"><div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person"><p class="site-author-name" itemprop="name">Murry</p><div class="site-description motion-element" itemprop="description">分享哟,php程序猿,php博客,phpblog</div></div><nav class="site-state motion-element"><div class="site-state-item site-state-posts"><a href="/archives/"><span class="site-state-item-count">26</span> <span class="site-state-item-name">日志</span></a></div><div class="site-state-item site-state-categories"><a href="/categories/"><span class="site-state-item-count">5</span> <span class="site-state-item-name">分类</span></a></div><div class="site-state-item site-state-tags"><a href="/tags/"><span class="site-state-item-count">20</span> <span class="site-state-item-name">标签</span></a></div></nav><div class="links-of-author motion-element"><span class="links-of-author-item"><a href="https://github.com/qiaoanqiao" title="GitHub &rarr; https://github.com/qiaoanqiao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i> GitHub</a></span><span class="links-of-author-item"><a href="/fenxiangy@163.com" title="E-Mail &rarr; fenxiangy@163.com"><i class="fa fa-fw fa-envelope"></i> E-Mail</a></span></div></div></div><div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active"><div class="post-toc"><div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#注释依赖-测试中的流程控制"><span class="nav-number">1.</span> <span class="nav-text">注释依赖(测试中的流程控制)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据供给器-自动迭代"><span class="nav-number">2.</span> <span class="nav-text">数据供给器(自动迭代)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试出现异常"><span class="nav-number">3.</span> <span class="nav-text">测试出现异常:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对输出进行测试-echo等"><span class="nav-number">4.</span> <span class="nav-text">对输出进行测试(echo等)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#phpunit可生成日志-搭配Xdebug"><span class="nav-number">5.</span> <span class="nav-text">phpunit可生成日志(搭配Xdebug)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基镜-测试基础环境"><span class="nav-number">6.</span> <span class="nav-text">基镜(测试基础环境)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试替身"><span class="nav-number">7.</span> <span class="nav-text">测试替身</span></a></li></ol></div></div></div></div></aside><div id="sidebar-dimmer"></div></div></main><footer id="footer" class="footer"><div class="footer-inner"><div class="copyright">&copy; 2015 – <span itemprop="copyrightYear">2019</span><span class="with-love" id="animate"><i class="fa fa-user"></i></span> <span class="author" itemprop="copyrightHolder">Murry</span></div><div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div><span class="post-meta-divider">|</span><div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.3.0</div></div></footer><div class="back-to-top"><i class="fa fa-arrow-up"></i></div></div><script src="/lib/jquery/index.js?v=3.4.1"></script><script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script><script src="/lib/unpkg.com/valine/dist/Valine.min.js"></script><script src="/lib/velocity/velocity.min.js?v=1.2.1"></script><script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script><script src="/js/utils.js?v=7.3.0"></script><script src="/js/motion.js?v=7.3.0"></script><script src="/js/schemes/muse.js?v=7.3.0"></script><script src="/js/next-boot.js?v=7.3.0"></script><script src="/js/local-search.js?v=7.3.0"></script><script src="/js/scrollspy.js?v=7.3.0"></script><script src="/js/post-details.js?v=7.3.0"></script><script>var GUEST=["nick","mail","link"],guest="nick,mail,link";guest=guest.split(",").filter(function(a){return-1<GUEST.indexOf(a)}),new Valine({el:"#comments",verify:!1,notify:!1,appId:"5MAshWrT8VHdC9f9YLj5g6xG-MdYXbMMI",appKey:"n8k126UjSFx0MaQvxcMuyoa0",placeholder:"ヾﾉ≧∀≦)o 来呀！快活呀！~",avatar:"mm",meta:guest,pageSize:"10",visitor:!1,lang:"zh-Hans",path:location.pathname})</script></body></html>
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    save_scroll: false,
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="注意事项:  编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用  注释依赖(测试中的流程控制) 当某个测试所依赖的测试   失败时，PHPUnit 会跳过这个测试。  例如:测试a 需要 测试b获取的值 来进行测试a的测试;可以用注释依赖进行值传递 如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参">
+<meta name="keywords" content="phpunit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单元测试文档学习笔记">
+<meta property="og:url" content="https://www.fenxiangy.com/note//unit-test-document-study-notes.html">
+<meta property="og:site_name" content="分享哟">
+<meta property="og:description" content="注意事项:  编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用  注释依赖(测试中的流程控制) 当某个测试所依赖的测试   失败时，PHPUnit 会跳过这个测试。  例如:测试a 需要 测试b获取的值 来进行测试a的测试;可以用注释依赖进行值传递 如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-05T08:09:33.916Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="单元测试文档学习笔记">
+<meta name="twitter:description" content="注意事项:  编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用  注释依赖(测试中的流程控制) 当某个测试所依赖的测试   失败时，PHPUnit 会跳过这个测试。  例如:测试a 需要 测试b获取的值 来进行测试a的测试;可以用注释依赖进行值传递 如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参">
+  <link rel="canonical" href="https://www.fenxiangy.com/note//unit-test-document-study-notes">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>单元测试文档学习笔记 | 分享哟</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c0261b738d8ce7c4fcea76f72faec843";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">分享哟</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">很少有人懂天秤, 以前没有. 以后也没有。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+    
+
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+    </div>
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content page-post-detail">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.fenxiangy.com/note/unit-test-document-study-notes.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Murry">
+      <meta itemprop="description" content="分享哟,php程序猿,php博客,phpblog">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="分享哟">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">单元测试文档学习笔记
+
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-24 10:33:00" itemprop="dateCreated datePublished" datetime="2018-10-24T10:33:00+08:00">2018-10-24</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-08-05 16:09:33" itemprop="dateModified" datetime="2019-08-05T16:09:33+08:00">2019-08-05</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/note/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="fa fa-comment-o"></i>
+    </span>
+    <span class="post-meta-item-text">评论数：</span>
+  
+    <a href="/note/unit-test-document-study-notes.html#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/note/unit-test-document-study-notes.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>注意事项:</p>
+<ul>
+<li>编写单元测试,方法块注释不随意填写, 防止出现使用单元测试提供的注释语法无法使用</li>
+</ul>
+<h4 id="注释依赖-测试中的流程控制"><a href="#注释依赖-测试中的流程控制" class="headerlink" title="注释依赖(测试中的流程控制)"></a>注释依赖(测试中的流程控制)</h4><ul>
+<li>当某个测试所依赖的测试  </li>
+<li>失败时，PHPUnit 会跳过这个测试。<br>  例如:测试a 需要 测试b获取的值 来进行测试a的测试;<br>可以用注释依赖进行值传递</li>
+<li>如果测试同时从 @dataProvider 方法和一个或多个 @depends 测试接收数据，那么来自于数据供给器的参数将先于来自所依赖的测试的。来自于所依赖的测试的参数对于每个数据集都是一样的。</li>
+<li>如果一个测试依赖于另外一个使用了数据供给器的测试，仅当被依赖的测试至少能在一组数据上成功时，依赖于它的测试才会运行。使用了数据供给器的测试，其运行结果是无法注入到依赖于此测试的其他测试中的。</li>
+</ul>
+<p>详细使用参考: <a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id7" target="_blank" rel="noopener">手册</a></p>
+<h4 id="数据供给器-自动迭代"><a href="#数据供给器-自动迭代" class="headerlink" title="数据供给器(自动迭代)"></a>数据供给器(自动迭代)</h4><ul>
+<li>测试a 需要多种数据进行测试, 用数据供给器后,会自动迭代测试数据供给器提供的数据进行测试.</li>
+</ul>
+<blockquote>
+<p>测试方法可以接受任意参数。这些参数由数据供给器方法（在 writing-tests-for-phpunit.data-providers.examples.DataTest.php<code>中，是 ``additionProvider()</code> 方法）提供。用 @dataProvider 标注来指定使用哪个数据供给器方法。</p>
+</blockquote>
+<blockquote>
+<p>数据供给器方法必须声明为 <code>public</code>，其返回值要么是一个数组，其每个元素也是<code>数组</code>；要么是一个实现了 Iterator 接口的对象，在对它进行迭代时每步产生一个数组。每个数组都是测试数据集的一部分，将以它的内容作为参数来调用测试方法。</p>
+</blockquote>
+<p>Example 2.5 使用返回数组的数组的数据供给器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">use PHPUnit\Framework\TestCase;</span><br><span class="line">    </span><br><span class="line">class DataTest extends TestCase</span><br><span class="line">&#123;</span><br><span class="line">    /**</span><br><span class="line">     * @dataProvider additionProvider</span><br><span class="line">     */</span><br><span class="line">    public function testAdd($a, $b, $expected)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;assertEquals($expected, $a + $b);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public function additionProvider()</span><br><span class="line">    &#123;</span><br><span class="line">        return [</span><br><span class="line">            [0, 0, 0],</span><br><span class="line">            [0, 1, 1],</span><br><span class="line">            [1, 0, 1],</span><br><span class="line">            [1, 1, 3]</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>详细使用参考: <a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id10" target="_blank" rel="noopener">手册</a></p>
+<h4 id="测试出现异常"><a href="#测试出现异常" class="headerlink" title="测试出现异常:"></a>测试出现异常:</h4><p>标注来测试被测代码中是否抛出了异常。</p>
+<ul>
+<li><p>php原生异常<br>  使用<code>PHPUnit\Framework\Error</code> 来注释</p>
+<p>  <code>PHPUnit\Framework\Error\Notice</code> 和 <code>PHPUnit\Framework\Error\Warning</code> 分别代表 PHP 通知与 PHP 警告。 </p>
+</li>
+<li><p>如果测试依靠会触发错误的 PHP 函数，例如 fopen ，有时候在测试中使用错误抑制符会很有用。通过抑制住错误通知，就能对返回值进行检查，否则错误通知将会导致抛出 PHPUnit\Framework\Error\Notice。</p>
+</li>
+</ul>
+<blockquote>
+<p>对异常进行测试是越明确越好的。对太笼统的类进行测试有可能导致不良副作用。因此，不再允许用 @expectedException 或 setExpectedException() 对 Exception 类进行测试。</p>
+</blockquote>
+<p>测试的功能或代码, 编写的测试运行后断言肯定会抛出异常,可以用<code>@expectException</code>指定抛出的异常类型;如果抛出异常类型同注释异常类型一致,结果为测试成功;</p>
+<p>@expectedExceptionCode (异常错误码)、@expectedExceptionMessage (异常信息)和 @expectedExceptionMessageRegExp (异常信息正则匹配)</p>
+<p>详细使用参考: <a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id11" target="_blank" rel="noopener">手册</a></p>
+<h4 id="对输出进行测试-echo等"><a href="#对输出进行测试-echo等" class="headerlink" title="对输出进行测试(echo等)"></a>对输出进行测试(echo等)</h4><p>如<code>echo</code>, <code>print</code>. <em>单元测试使用输出缓冲区控制方式获取此内容</em> 详见<a href="http://php.net/manual/zh/ref.outcontrol.php" target="_blank" rel="noopener">手册</a></p>
+<p>方法:<a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#writing-tests-for-phpunit-output-tables-api" target="_blank" rel="noopener">手册</a></p>
+<p><a href="https://phpunit.readthedocs.io/zh_CN/latest/writing-tests-for-phpunit.html#id16" target="_blank" rel="noopener">手册</a></p>
+<h4 id="phpunit可生成日志-搭配Xdebug"><a href="#phpunit可生成日志-搭配Xdebug" class="headerlink" title="phpunit可生成日志(搭配Xdebug)"></a>phpunit可生成日志(搭配Xdebug)</h4><p><a href="https://phpunit.readthedocs.io/zh_CN/latest/textui.html#id2" target="_blank" rel="noopener">文档</a></p>
+<h4 id="基镜-测试基础环境"><a href="#基镜-测试基础环境" class="headerlink" title="基镜(测试基础环境)"></a>基镜(测试基础环境)</h4><p>在执行测试时,有时需要预先搭建测试环境.<br>类似于php的魔术方法行为;</p>
+<p><a href="https://phpunit.readthedocs.io/zh_CN/latest/fixtures.html#fixtures" target="_blank" rel="noopener">手册</a></p>
+<h4 id="测试替身"><a href="#测试替身" class="headerlink" title="测试替身"></a>测试替身</h4><ul>
+<li><p>桩件<br>  在桩件中,创建测试所需要的对象,所需要的对象可能依赖或者创建复杂使用难度高</p>
+<blockquote>
+<p>有时候对被测系统(SUT)进行测试是很困难的，因为它依赖于其他无法在测试环境中使用的组件。这有可能是因为这些组件不可用，它们不会返回测试所需要的结果，或者执行它们会有不良副作用。在其他情况下，我们的测试策略要求对被测系统的内部行为有更多控制或更多可见性。<br>  使用桩件可以替换掉被测试系统所依赖的实际组件;返回配置好返回值的测试替身(桩件)的方法称为上桩;</p>
+</blockquote>
+<ul>
+<li>可以固定简单返回值,也可以使用变量实现更复杂的上桩<code>willReturn($value)</code> or <code>will($this-&gt;returnValue($value))</code></li>
+<li>返回对桩件对象的引用<code>will($this-&gt;returnSelf());</code></li>
+<li>不同参数对应的不同返回值方式上桩<code>returnValueMap(array $map);</code></li>
+<li>让上桩方法返回回调函数或方法的结果<code>returnCallback()</code>;</li>
+<li>直接给出期望返回值的列表<code>will($this-&gt;onConsecutiveCalls(2, 3, 5, 7));</code>调用顺序返回</li>
+<li>抛出异常<code>will($this-&gt;throwException(new Exception));</code></li>
+<li></li>
+</ul>
+</li>
+<li><p>仿件对象<br>  使用仿件对象，主要的功能是验证预期的行为，作为观察点来核实被测试系统在测试中的间接输出。</p>
+<ul>
+<li><p>方法的执行次数<code>expects($this-&gt;once())-&gt;method(&#39;update&#39;)</code></p>
+</li>
+<li><p>传入方法的参数<code>with($this-&gt;equalTo(&#39;something&#39;));</code></p>
+</li>
+<li><p>对特质(Trait)与抽象类进行模仿</p>
+</li>
+<li><p>对 Web 服务(Web Services)进行上桩或模仿</p>
+</li>
+<li><p>对文件系统进行模仿</p>
+</li>
+<li><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testMockBuy</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $appleMock = <span class="keyword">$this</span>-&gt;getMockBuilder(Apple::class)</span><br><span class="line">                      -&gt;setMethods([<span class="string">'getPrice'</span>, <span class="string">'buy'</span>])</span><br><span class="line">                      -&gt;getMock();</span><br><span class="line">    <span class="comment">//建立预期情况，buy方法会被调用一次</span></span><br><span class="line">    $appleMock-&gt;expects(<span class="keyword">$this</span>-&gt;once())</span><br><span class="line">              -&gt;method(<span class="string">'buy'</span>);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;custom-&gt;buy($appleMock, <span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://phpunit.readthedocs.io/zh_CN/latest/test-doubles.html#test-doubles-stubs" target="_blank" rel="noopener">文档地址</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/phpunit/" rel="tag"># phpunit</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/note/phpstorm-collection-common-shortcuts.html" rel="next" title="phpstorm珍藏常用快捷键">
+                <i class="fa fa-chevron-left"></i> phpstorm珍藏常用快捷键
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/note/php-data-to-json-chinese-transcoding-problem.html" rel="prev" title="php 数据转json 中文转码问题">
+                php 数据转json 中文转码问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Murry</p>
+  <div class="site-description motion-element" itemprop="description">分享哟,php程序猿,php博客,phpblog</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qiaoanqiao" title="GitHub &rarr; https://github.com/qiaoanqiao" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="/fenxiangy@163.com" title="E-Mail &rarr; fenxiangy@163.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+  </div>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#注释依赖-测试中的流程控制"><span class="nav-number">1.</span> <span class="nav-text">注释依赖(测试中的流程控制)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据供给器-自动迭代"><span class="nav-number">2.</span> <span class="nav-text">数据供给器(自动迭代)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试出现异常"><span class="nav-number">3.</span> <span class="nav-text">测试出现异常:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对输出进行测试-echo等"><span class="nav-number">4.</span> <span class="nav-text">对输出进行测试(echo等)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#phpunit可生成日志-搭配Xdebug"><span class="nav-number">5.</span> <span class="nav-text">phpunit可生成日志(搭配Xdebug)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基镜-测试基础环境"><span class="nav-number">6.</span> <span class="nav-text">基镜(测试基础环境)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试替身"><span class="nav-number">7.</span> <span class="nav-text">测试替身</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Murry</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+<script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+
+<script src="/js/next-boot.js?v=7.3.0"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.3.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+    <script>
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: '5MAshWrT8VHdC9f9YLj5g6xG-MdYXbMMI',
+    appKey: 'n8k126UjSFx0MaQvxcMuyoa0',
+    placeholder: 'ヾﾉ≧∀≦)o 来呀！快活呀！~',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: 'zh-cn' || 'zh-cn',
+    path: location.pathname
+  });
+</script>
+
+</body>
+</html>
