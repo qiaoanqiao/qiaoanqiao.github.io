@@ -89,9 +89,9 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[php 修改数组配置文件]]></title>
-    <url>%2F%2Fnote%2Fphp-modify-array-configuration-file.html</url>
-    <content type="text"><![CDATA[Thinkphp 12345678910111213141516171819/** * 刷新配置文件 */ protected function refreshFile() &#123; $config = []; foreach ($this-&gt;model-&gt;all() as $k =&gt; $v) &#123; $value = $v-&gt;toArray(); if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) &#123; $value['value'] = explode(',', $value['value']); &#125; if ($value['type'] == 'array') &#123; $value['value'] = (array)json_decode($value['value'], TRUE); &#125; $config[$value['name']] = $value['value']; &#125; file_put_contents(APP_PATH . 'extra' . DS . 'site.php', '&lt;?php' . "\n\nreturn " . var_export($config, true) . ";"); &#125; 其中 var_export函数是重点 函数官方文档传送门]]></content>
+    <title><![CDATA[php 数据转json 中文转码问题]]></title>
+    <url>%2F%2Fnote%2Fphp-data-to-json-chinese-transcoding-problem.html</url>
+    <content type="text"><![CDATA[我们知道, 用PHP的json_encode来处理中文的时候, 中文都会被编码, 变成不可读的, 类似”\u***”的格式, 还会在一定程度上增加传输的数据量. &lt;?php echo json_encode(&quot;中文&quot;); //&quot;\u4e2d\u6587&quot;这就让我们这些在天朝做开发的同学, 很是头疼, 有的时候还不得不自己写json_encode. 而在PHP5.4, 这个问题终于得以解决, Json新增了一个选项: JSON_UNESCAPED_UNICODE, 故名思议, 就是说, Json不要编码Unicode. 看下面的例子: &lt;?php echo json_encode(&quot;中文&quot;, JSON_UNESCAPED_UNICODE); //&quot;中文&quot;怎么样, 是不是让大家很开心的改动? 呵呵, 当然, Json在5.4还加入了: JSON_BIGINT_AS_STRING, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES等选项, 如果有兴趣, 大家可以参看: json_encode 不过, 还是要提醒下: PHP 5.4还处于开发阶段, 在最终release之前, 任何新特性都可能被调整或者更改. 如果大家有任何建议, 也欢迎反馈, 帮助我们使得PHP变得更好. 本文转载文章 http://www.laruence.com/2011/10/10/2239.html]]></content>
       <categories>
         <category>学习笔记</category>
       </categories>
@@ -100,9 +100,9 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[php 数据转json 中文转码问题]]></title>
-    <url>%2F%2Fnote%2Fphp-data-to-json-chinese-transcoding-problem.html</url>
-    <content type="text"><![CDATA[我们知道, 用PHP的json_encode来处理中文的时候, 中文都会被编码, 变成不可读的, 类似”\u***”的格式, 还会在一定程度上增加传输的数据量. &lt;?php echo json_encode(&quot;中文&quot;); //&quot;\u4e2d\u6587&quot;这就让我们这些在天朝做开发的同学, 很是头疼, 有的时候还不得不自己写json_encode. 而在PHP5.4, 这个问题终于得以解决, Json新增了一个选项: JSON_UNESCAPED_UNICODE, 故名思议, 就是说, Json不要编码Unicode. 看下面的例子: &lt;?php echo json_encode(&quot;中文&quot;, JSON_UNESCAPED_UNICODE); //&quot;中文&quot;怎么样, 是不是让大家很开心的改动? 呵呵, 当然, Json在5.4还加入了: JSON_BIGINT_AS_STRING, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES等选项, 如果有兴趣, 大家可以参看: json_encode 不过, 还是要提醒下: PHP 5.4还处于开发阶段, 在最终release之前, 任何新特性都可能被调整或者更改. 如果大家有任何建议, 也欢迎反馈, 帮助我们使得PHP变得更好. 本文转载文章 http://www.laruence.com/2011/10/10/2239.html]]></content>
+    <title><![CDATA[php 修改数组配置文件]]></title>
+    <url>%2F%2Fnote%2Fphp-modify-array-configuration-file.html</url>
+    <content type="text"><![CDATA[Thinkphp 12345678910111213141516171819/** * 刷新配置文件 */ protected function refreshFile() &#123; $config = []; foreach ($this-&gt;model-&gt;all() as $k =&gt; $v) &#123; $value = $v-&gt;toArray(); if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) &#123; $value['value'] = explode(',', $value['value']); &#125; if ($value['type'] == 'array') &#123; $value['value'] = (array)json_decode($value['value'], TRUE); &#125; $config[$value['name']] = $value['value']; &#125; file_put_contents(APP_PATH . 'extra' . DS . 'site.php', '&lt;?php' . "\n\nreturn " . var_export($config, true) . ";"); &#125; 其中 var_export函数是重点 函数官方文档传送门]]></content>
       <categories>
         <category>学习笔记</category>
       </categories>
