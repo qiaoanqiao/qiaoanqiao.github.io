@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title><![CDATA[mac下php手动编译debug安装会碰到的问题]]></title>
-    <url>%2F%2Fphp-yuan-ma-jie-du%2Fcjz2esxoy000f5d8w0dqlf6tf.html</url>
+    <url>%2F%2Fphp-yuan-ma-jie-du%2Fcjz2etqhc000e768weu0rhoht.html</url>
     <content type="text"><![CDATA[mac 下 php手动编译 debug 安装会碰到的问题 下载7.1.0版本php源码后进行编译 1./configure --prefix=/usr/local/php7.1.0 --enable-debug --enable-fpm --with-iconv=/usr/local/lib/libiconv --with-config-file-path=/usr/local/php7.1.0/etc mac 需要先切换管理用户 sudo su 再执行 make &amp;&amp; make install 如果碰到一些错误, 请把错误内容 分段 挑选关键词百度或Google 多试试提供的解决方法; 列出两个比较坑的错误解决流程 Undefined symbols for architecture x86_64:“_libiconv”, referenced from: 12345678910111213141516171819202122232425262728293031Undefined symbols for architecture x86_64: &quot;_libiconv&quot;, referenced from: _zif_iconv_substr in iconv.o _zif_iconv_mime_encode in iconv.o _php_iconv_string in iconv.o __php_iconv_strlen in iconv.o __php_iconv_strpos in iconv.o __php_iconv_appendl in iconv.o _php_iconv_stream_filter_append_bucket in iconv.o ... &quot;_libiconv_close&quot;, referenced from: _zif_iconv_substr in iconv.o _zif_iconv_mime_encode in iconv.o _php_iconv_string in iconv.o __php_iconv_strlen in iconv.o __php_iconv_strpos in iconv.o __php_iconv_mime_decode in iconv.o _php_iconv_stream_filter_factory_create in iconv.o ... &quot;_libiconv_open&quot;, referenced from: _zif_iconv_substr in iconv.o _zif_iconv_mime_encode in iconv.o _php_iconv_string in iconv.o __php_iconv_strlen in iconv.o __php_iconv_strpos in iconv.o __php_iconv_mime_decode in iconv.o _php_iconv_stream_filter_factory_create in iconv.o ...ld: symbol(s) not found for architecture x86_64clang: error: linker command failed with exit code 1 (use -v to see invocation)make: *** [libs/libphp7.bundle] Error 1 按照[同类问题](https://stackoverflow.com/questions/40167324/php-compile-fails-with-undefined-symbols-for-architecture-x86-64-libiconv-on-ma)的解决方法 在解决方法中搜索的关键词你如果搜索不到需要改成`EXTRA_LDFLAGS_PROGRAM` 或者拆分一下搜索 然后删除解决方法说的内容 记得前面加上 - ![](https://resource.fenxiangy.com/2019/08/08/15651647274096.jpg!markdown)https://bugs.php.net/bug.php?id=71343https://juejin.im/entry/5b87a081f265da434a1fd98a]]></content>
       <categories>
         <category>PHP源码解读</category>
@@ -12,9 +12,15 @@
       </tags>
   </entry>
   <entry>
-    <title></title>
-    <url>%2F%2Fdefault%2Fcjz2esxpc00135d8w11yzt8o6.html</url>
+    <title><![CDATA[php中的变量-源码解读]]></title>
+    <url>%2F%2Fphp-yuan-ma-jie-du%2Fcjz2etqhj000z768wpk346es9.html</url>
     <content type="text"><![CDATA[变量字符串 在定义字符串 赋值给变量, 这个变量gc.u.v.type=6为字符常亮 由此可得字符常亮类型. 不手动创建内存去指向. 赋值变量赋值给另外一个变量 对于简单类型, 如: int null 会直接复制. 对于复杂类型 如 string object 会在写时复制 数组 数组变量 数组有两个类型: packed Array(索引数组) 和 Hash Array(非索引数组) , packed 类型只有两个索引数组 而 packed 则 有八个索引数组. - 当数组中的申键超过8个则会进行`处理`申请增加为`8+8`个桶数组 - `unset`并不会删除数组所占用的内存, 而是类型变为`is_undefined`观看教程:变量基础源码解析]]></content>
+      <categories>
+        <category>PHP源码解读</category>
+      </categories>
+      <tags>
+        <tag>源码</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[mqtt协议理解]]></title>
@@ -105,9 +111,9 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[php 修改数组配置文件]]></title>
-    <url>%2F%2Fnote%2Fphp-modify-array-configuration-file.html</url>
-    <content type="text"><![CDATA[Thinkphp 12345678910111213141516171819/** * 刷新配置文件 */ protected function refreshFile() &#123; $config = []; foreach ($this-&gt;model-&gt;all() as $k =&gt; $v) &#123; $value = $v-&gt;toArray(); if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) &#123; $value['value'] = explode(',', $value['value']); &#125; if ($value['type'] == 'array') &#123; $value['value'] = (array)json_decode($value['value'], TRUE); &#125; $config[$value['name']] = $value['value']; &#125; file_put_contents(APP_PATH . 'extra' . DS . 'site.php', '&lt;?php' . "\n\nreturn " . var_export($config, true) . ";"); &#125; 其中 var_export函数是重点 函数官方文档传送门]]></content>
+    <title><![CDATA[php 数据转json 中文转码问题]]></title>
+    <url>%2F%2Fnote%2Fphp-data-to-json-chinese-transcoding-problem.html</url>
+    <content type="text"><![CDATA[我们知道, 用PHP的json_encode来处理中文的时候, 中文都会被编码, 变成不可读的, 类似”\u***”的格式, 还会在一定程度上增加传输的数据量. &lt;?php echo json_encode(&quot;中文&quot;); //&quot;\u4e2d\u6587&quot;这就让我们这些在天朝做开发的同学, 很是头疼, 有的时候还不得不自己写json_encode. 而在PHP5.4, 这个问题终于得以解决, Json新增了一个选项: JSON_UNESCAPED_UNICODE, 故名思议, 就是说, Json不要编码Unicode. 看下面的例子: &lt;?php echo json_encode(&quot;中文&quot;, JSON_UNESCAPED_UNICODE); //&quot;中文&quot;怎么样, 是不是让大家很开心的改动? 呵呵, 当然, Json在5.4还加入了: JSON_BIGINT_AS_STRING, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES等选项, 如果有兴趣, 大家可以参看: json_encode 不过, 还是要提醒下: PHP 5.4还处于开发阶段, 在最终release之前, 任何新特性都可能被调整或者更改. 如果大家有任何建议, 也欢迎反馈, 帮助我们使得PHP变得更好. 本文转载文章 http://www.laruence.com/2011/10/10/2239.html]]></content>
       <categories>
         <category>学习笔记</category>
       </categories>
@@ -116,9 +122,9 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[php 数据转json 中文转码问题]]></title>
-    <url>%2F%2Fnote%2Fphp-data-to-json-chinese-transcoding-problem.html</url>
-    <content type="text"><![CDATA[我们知道, 用PHP的json_encode来处理中文的时候, 中文都会被编码, 变成不可读的, 类似”\u***”的格式, 还会在一定程度上增加传输的数据量. &lt;?php echo json_encode(&quot;中文&quot;); //&quot;\u4e2d\u6587&quot;这就让我们这些在天朝做开发的同学, 很是头疼, 有的时候还不得不自己写json_encode. 而在PHP5.4, 这个问题终于得以解决, Json新增了一个选项: JSON_UNESCAPED_UNICODE, 故名思议, 就是说, Json不要编码Unicode. 看下面的例子: &lt;?php echo json_encode(&quot;中文&quot;, JSON_UNESCAPED_UNICODE); //&quot;中文&quot;怎么样, 是不是让大家很开心的改动? 呵呵, 当然, Json在5.4还加入了: JSON_BIGINT_AS_STRING, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES等选项, 如果有兴趣, 大家可以参看: json_encode 不过, 还是要提醒下: PHP 5.4还处于开发阶段, 在最终release之前, 任何新特性都可能被调整或者更改. 如果大家有任何建议, 也欢迎反馈, 帮助我们使得PHP变得更好. 本文转载文章 http://www.laruence.com/2011/10/10/2239.html]]></content>
+    <title><![CDATA[php 修改数组配置文件]]></title>
+    <url>%2F%2Fnote%2Fphp-modify-array-configuration-file.html</url>
+    <content type="text"><![CDATA[Thinkphp 12345678910111213141516171819/** * 刷新配置文件 */ protected function refreshFile() &#123; $config = []; foreach ($this-&gt;model-&gt;all() as $k =&gt; $v) &#123; $value = $v-&gt;toArray(); if (in_array($value['type'], ['selects', 'checkbox', 'images', 'files'])) &#123; $value['value'] = explode(',', $value['value']); &#125; if ($value['type'] == 'array') &#123; $value['value'] = (array)json_decode($value['value'], TRUE); &#125; $config[$value['name']] = $value['value']; &#125; file_put_contents(APP_PATH . 'extra' . DS . 'site.php', '&lt;?php' . "\n\nreturn " . var_export($config, true) . ";"); &#125; 其中 var_export函数是重点 函数官方文档传送门]]></content>
       <categories>
         <category>学习笔记</category>
       </categories>
